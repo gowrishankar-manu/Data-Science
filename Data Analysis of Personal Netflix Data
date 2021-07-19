@@ -1,0 +1,21 @@
+import pandas as pd
+df=pd.read_csv(r'D:\IITM\Interns\Python\Project\Data Analysis\ViewingActivity.csv')
+df.shape
+df
+df=df.drop(['Attributes', 'Supplemental Video Type', 'Bookmark','Latest Bookmark','Country'],axis=1)
+df.dtypes
+df['Start Time']=pd.to_datetime(df['Start Time'],utc=True)
+df=df.set_index(['Start Time'])
+df.index=df.index.tz_convert('Asia/Calcutta')
+df=df.reset_index()
+df['Duration']=pd.to_timedelta(df['Duration'])
+df=df[df['Duration']>'0 days 00:03:00']
+df.shape
+import matplotlib
+df['Profile Name']=pd.Categorical(df['Profile Name'],categories=['AD','Alfred','GKS','Gowrishankar','SSJ'],ordered=True)
+Profile_Time=df['Profile Name'].value_counts()
+Profile_Time=Profile_Time.sort_index()
+Profile_Time.plot(kind='bar',figsize=(20,10),title='Episodes Watched per Profile')
+rm=df[df['Title'].str.contains('Rick and Morty',regex=False)]
+ser=df[df['Title'].split()[1].value_counts()>=10]
+df['Duration'].sum()
