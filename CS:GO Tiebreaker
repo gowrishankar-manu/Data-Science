@@ -1,0 +1,50 @@
+# This Python 3 environment comes with many helpful analytics libraries installed
+# It is defined by the kaggle/python Docker image: https://github.com/kaggle/docker-python
+# For example, here's several helpful packages to load
+
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+from sklearn.model_selection import train_test_split
+from sklearn import linear_model
+from sklearn.metrics import mean_squared_error, r2_score
+import matplotlib
+\
+
+# Input data files are available in the read-only "../input/" directory
+# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory
+
+import os
+for dirname, _, filenames in os.walk('/kaggle/input'):
+    for filename in filenames:
+        print(os.path.join(dirname, filename))
+
+df=pd.read_csv('/kaggle/input/csgo-professional-matches/players.csv')
+df.dropna(inplace=True)
+df.shape
+
+train,test=train_test_split(df, test_size=0.25,random_state=10)
+x_train=train[['m1_kills','m1_assists','m1_deaths','m1_hs','m1_flash_assists','m1_kast','m1_kddiff','m1_rating','m1_fkdiff','m1_adr','m1_rating','m2_kills','m2_assists','m2_deaths','m2_hs','m2_flash_assists','m2_kast','m2_kddiff','m2_rating','m2_fkdiff','m2_adr','m2_rating']]
+y_train=train[['m3_kills','m3_assists','m3_deaths']]
+x_test=test[['m1_kills','m1_assists','m1_deaths','m1_hs','m1_flash_assists','m1_kast','m1_kddiff','m1_rating','m1_fkdiff','m1_adr','m1_rating','m2_kills','m2_assists','m2_deaths','m2_hs','m2_flash_assists','m2_kast','m2_kddiff','m2_rating','m2_fkdiff','m2_adr','m2_rating']]
+y_test=test[['m3_kills','m3_assists','m3_deaths']]
+
+lin_reg=linear_model.LinearRegression()
+lin_reg.fit(x_train,y_train)
+y_lin_predicted=lin_reg.predict(x_test)
+print(y_lin_predicted-y_test)
+
+print('Coefficients: \n', lin_reg.coef_)
+print("Mean squared error: %.3f" % mean_squared_error(y_test,y_lin_predicted))
+print('Variance score: %.3f' % r2_score(y_test, y_lin_predicted))
+k=y_lin_predicted-y_test
+k.head(10)
+
+ridg_reg=linear_model.Ridge()
+ridg_reg.fit(x_train,y_train)
+y_rid_predicted=ridg_reg.predict(x_test)
+print(y_rid_predicted-y_test)
+
+print('Co-effients :/n', ridg_reg.coef_)
+print("Mean squared error: %.3f" % mean_squared_error(y_test,y_rid_predicted))
+print('Variance score: %.3f' % r2_score(y_test, y_rid_predicted))
+print(ridg_reg.score(x_test, y_rid_predicted))
